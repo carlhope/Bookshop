@@ -10,7 +10,6 @@ Route::get('/', function () {
 
 
 Route::get('/books', [BooksController::class, 'index']);
-
 Route::get('/books/{id}', [BooksController::class, 'show'])->name('books.show');
 
 Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');

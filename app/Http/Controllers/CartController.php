@@ -21,6 +21,7 @@ public function addToCart(Request $request, $id)
             'title' => $book->title,
             'price' => $book->price,
             'quantity' => 1
+
         ];
     }
 
@@ -50,7 +51,7 @@ public function addToCart(Request $request, $id)
         'message' => 'Book removed from cart.',
         'cart_count' => Session::get('cart_count', 0)
     ]);
-}
+} 
 public function updateQuantity(Request $request, $id)
 {
     $cart = Session::get('cart', []);
