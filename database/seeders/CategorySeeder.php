@@ -13,12 +13,12 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Category::insert([
-            ['name' => 'Technology'],
-            ['name' => 'Fiction'],
-            ['name' => 'Business'],
-            ['name' => 'Science'],
+    Category::insert([
+    ['name' => 'Fantasy'],
+    ['name' => 'Science Fiction'],
+    ['name' => 'Mystery'],
+    ['name' => 'Historical Fiction'],
+    ['name' => 'Horror'],
         ]);
-
     }
 }
