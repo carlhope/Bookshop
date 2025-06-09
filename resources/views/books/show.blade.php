@@ -59,18 +59,18 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            alert(data.message);
+                            console.log(data.message);
                             document.getElementById('cart-count').innerText = data.cart_count;
 
                             // Replace only the cart button, keeping other details
                             let cartButtonContainer = this.closest('.cart-controls');
                             cartButtonContainer.innerHTML = `
-                                <div class="flex items-center space-x-2">
-                                    <button class="decrease-quantity bg-red-500 text-white px-2 py-1 rounded" data-id="${bookId}">−</button>
-                                    <span class="quantity-value text-lg font-bold w-8 text-center" data-id="${bookId}">1</span>
-                                    <button class="increase-quantity bg-blue-500 text-white px-2 py-1 rounded" data-id="${bookId}">+</button>
-                                </div>
-                            `;
+                                        <div class="flex items-center space-x-2">
+                                            <button class="decrease-quantity bg-red-500 text-white px-2 py-1 rounded" data-id="${bookId}">−</button>
+                                            <span class="quantity-value text-lg font-bold w-8 text-center" data-id="${bookId}">1</span>
+                                            <button class="increase-quantity bg-blue-500 text-white px-2 py-1 rounded" data-id="${bookId}">+</button>
+                                        </div>
+                                    `;
                             attachQuantityHandlers(); // Rebind event listeners
                         })
                         .catch(error => console.error('Error:', error));
@@ -108,16 +108,16 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        alert(data.message);
+                        console.log(data.message);
                         document.getElementById('cart-count').innerText = data.cart_count;
 
                         // Restore "Add to Cart" button without removing other details
                         let cartButtonContainer = quantityElement.closest('.cart-controls');
                         cartButtonContainer.innerHTML = `
-                            <button class="add-to-cart bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" data-id="${bookId}">
-                                Add to Cart
-                            </button>
-                        `;
+                                    <button class="add-to-cart bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" data-id="${bookId}">
+                                        Add to Cart
+                                    </button>
+                                `;
                         attachAddToCartHandler(); // Rebind event listener
                     })
                     .catch(error => console.error('Error:', error));
