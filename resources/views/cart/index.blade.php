@@ -24,6 +24,9 @@
                 @endforeach
 
             </ul>
+            <div class="cart-summary">
+                <strong>Total Price: <span id="total-price">£{{ number_format($totalPrice, 2) }}</span></strong>
+            </div>
         </div>
     @else
         <p class="text-gray-500">Your cart is empty.</p>
@@ -47,8 +50,10 @@
         });
 
         function updateQuantity(bookId, change) {
+
             let quantityElement = document.querySelector(`.quantity-value[data-id='${bookId}']`);
             let newQuantity = parseInt(quantityElement.innerText) + change;
+
 
             if (newQuantity < 1) {
                 // Remove item if quantity is zero
@@ -61,8 +66,8 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data.message);
                         document.getElementById('cart-count').innerText = data.cart_count;
+                        document.getElementById('total-price').innerText = `£${data.total_price}`;
                         quantityElement.closest('.cart-item').remove(); // Remove item from UI
                         if (data.cart_count === 0) {
                             document.getElementById('cart-container').innerHTML = "<p>Your cart is empty!</p>";
@@ -82,9 +87,12 @@
                 })
                     .then(response => response.json())
                     .then(data => {
+                        console.log(data);
                         quantityElement.innerText = newQuantity; // Update UI
                         document.getElementById('cart-count').innerText = data.cart_count;
+                        document.getElementById('total-price').innerText = `£${data.total_price.toFixed(2)}`;
                     })
+
                     .catch(error => console.error('Error:', error));
             }
         }
