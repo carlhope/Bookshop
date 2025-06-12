@@ -41,11 +41,12 @@ public function addToCart(Request $request, $id)
 
     public function viewCart()
     {
-        $cart = Session::get('cart', []);
-        $totalPrice = collect($cart)->sum(function ($item) {
-        return $item['price'] * $item['quantity'];
-    });
-        return view('cart.index', compact('cart','totalPrice'));
+       // $cart = Session::get('cart', []);
+       // $totalPrice = collect($cart)->sum(function ($item) {
+       // return $item['price'] * $item['quantity'];
+    //});
+        //return view('cart.index', compact('cart','totalPrice'));
+        return view('cart.index');
     }
 
    public function removeFromCart($id)

@@ -17,4 +17,13 @@ class BookController extends Controller
     $book = Book::findOrFail($id);
     return view('books.show', compact('book'));
 }
+public function apiIndex()
+{
+    return response()->json(Book::all());
+}
+
+public function apiShow($id)
+{
+    return response()->json(Book::findOrFail($id));
+}
 }
