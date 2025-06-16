@@ -3,13 +3,21 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
+use Inertia\Inertia;
 
-Route::get('/', function () {
-    return view('home');
+
+Route::get('/', fn () => Inertia::render('Home'));
+
+Route::get('/about', fn () => Inertia::render('About'));
+
+
+
+Route::get('/books', function () {
+    return Inertia::render('BooksIndex', [
+        'books' => \App\Models\Book::all(),
+    ]);
 });
 
-
-Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/{id}', [BookController::class, 'show'])->name('books.show');
 
 Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
