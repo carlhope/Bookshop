@@ -30,12 +30,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    book: Object,
-    inCart: Boolean,
-    cartQuantity: Number
-  }
-};
+<script setup>
+defineProps({
+  book: Object,
+  inCart: Boolean,
+  cartQuantity: Number
+})
 </script>
+

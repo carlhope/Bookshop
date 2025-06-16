@@ -16,44 +16,48 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
-import BookCard from '../components/BookCard.vue';
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import BookCard from '../components/BookCard.vue'
 
-export default {
-  components: { BookCard },
-  data() {
-    return {
-      books: [],
-      cart: {}
-    };
-  },
-  async created() {
-    const response = await axios.get('api/books');
-    this.books = response.data;
-    this.cart = JSON.parse(localStorage.getItem('cart')) || {};
-  },
-  methods: {
-    addToCart(bookId) {
-      if (!this.cart[bookId]) {
-        this.cart[bookId] = { quantity: 1 };
-      }
-      localStorage.setItem('cart', JSON.stringify(this.cart));
-    },
-    increaseQuantity(bookId) {
-      if (this.cart[bookId]) {
-        this.cart[bookId].quantity++;
-        localStorage.setItem('cart', JSON.stringify(this.cart));
-      }
-    },
-    decreaseQuantity(bookId) {
-      if (this.cart[bookId] && this.cart[bookId].quantity > 1) {
-        this.cart[bookId].quantity--;
-      } else {
-        delete this.cart[bookId];
-      }
-      localStorage.setItem('cart', JSON.stringify(this.cart));
-    }
+const books = ref([])
+const cart = ref({})
+
+const fetchBooks = async () => {
+  const response = await axios.get('/api/books')
+  books.value = response.data
+  cart.value = JSON.parse(localStorage.getItem('cart')) || {}
+}
+
+const addToCart = (bookId) => {
+  if (!cart.value[bookId]) {
+    cart.value[bookId] = { quantity: 1 }
   }
-};
+  updateCartStorage()
+}
+
+const increaseQuantity = (bookId) => {
+  if (cart.value[bookId]) {
+    cart.value[bookId].quantity++
+    updateCartStorage()
+  }
+}
+
+const decreaseQuantity = (bookId) => {
+  if (cart.value[bookId]) {
+    if (cart.value[bookId].quantity > 1) {
+      cart.value[bookId].quantity--
+    } else {
+      delete cart.value[bookId]
+    }
+    updateCartStorage()
+  }
+}
+
+const updateCartStorage = () => {
+  localStorage.setItem('cart', JSON.stringify(cart.value))
+}
+
+onMounted(fetchBooks)
 </script>

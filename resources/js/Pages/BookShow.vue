@@ -2,7 +2,7 @@
   <div class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-lg flex flex-col md:flex-row items-center gap-6">
     <!-- Book Image -->
     <div class="flex-1 flex justify-center">
-      <img :src="book.cover_image" :alt="book.title" class="w-72 h-auto object-cover rounded">
+      <img :src="book.cover_image" :alt="book.title" class="w-72 h-auto object-cover rounded" />
     </div>
 
     <!-- Book Details -->
@@ -16,63 +16,84 @@
 
       <!-- Cart Controls -->
       <div class="cart-controls">
-        <button v-if="!inCart" @click="addToCart(book.id)" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        <button
+          v-if="!inCart"
+          @click="addToCart"
+          :disabled="processing"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+        >
           Add to Cart
         </button>
+
         <div v-else class="flex items-center space-x-2">
-          <button @click="decreaseQuantity(book.id)" class="bg-red-500 text-white px-2 py-1 rounded">−</button>
+          <button @click="decreaseQuantity" class="bg-red-500 text-white px-2 py-1 rounded">−</button>
           <span class="text-lg font-bold w-8 text-center">{{ cartQuantity }}</span>
-          <button @click="increaseQuantity(book.id)" class="bg-blue-500 text-white px-2 py-1 rounded">+</button>
+          <button @click="increaseQuantity" class="bg-blue-500 text-white px-2 py-1 rounded">+</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    book: Object
-  },
-  data() {
-    return {
-      cart: JSON.parse(localStorage.getItem('cart')) || {}
-    };
-  },
-  computed: {
-    inCart() {
-      return !!this.cart[this.book.id];
-    },
-    cartQuantity() {
-      return this.cart[this.book.id]?.quantity || 0;
+<script setup>
+import { computed, ref } from 'vue'
+import { router } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
+
+const page = usePage()
+const cart = computed(() => page.props.cart)
+const cartCount = computed(() => page.props.cartCount)
+
+
+const props = defineProps({
+  book: Object
+})
+
+const processing = ref(false)
+
+const inCart = computed(() => !!cart.value?.[props.book.id])
+const cartQuantity = computed(() => cart.value?.[props.book.id]?.quantity || 0)
+
+const addToCart = () => {
+  if (processing.value) return
+  processing.value = true
+
+  router.post(`/cart/add/${props.book.id}`, {}, {
+    preserveScroll: true,
+    // ↓ Allow Inertia to refresh props so cartQuantity updates
+    onFinish: () => {
+      processing.value = false
     }
-  },
-  methods: {
-    updateCart() {
-      localStorage.setItem('cart', JSON.stringify(this.cart));
-    },
-    addToCart(bookId) {
-      if (!this.cart[bookId]) {
-        this.cart[bookId] = { quantity: 1 };
-      }
-      this.updateCart();
-    },
-    increaseQuantity(bookId) {
-      if (this.cart[bookId]) {
-        this.cart[bookId].quantity++;
-        this.updateCart();
-      }
-    },
-    decreaseQuantity(bookId) {
-      if (this.cart[bookId]) {
-        if (this.cart[bookId].quantity > 1) {
-          this.cart[bookId].quantity--;
-        } else {
-          delete this.cart[bookId];
-        }
-        this.updateCart();
-      }
-    }
+  })
+}
+
+const increaseQuantity = () => {
+  try {
+    const bookId = props.book.id
+    const item = cart.value?.[bookId]
+    const currentQty = item?.quantity ?? 0
+    const newQty = currentQty + 1
+
+    router.post(`/cart/update/${bookId}`, { quantity: newQty })
+  } catch (err) {
+    console.error('Error in increaseQuantity:', err)
   }
-};
+}
+
+const decreaseQuantity = () => {
+  try {
+    const bookId = props.book.id
+    const currentQty = cart.value?.[bookId]?.quantity
+    const newQty = typeof currentQty === 'number' ? currentQty - 1 : 0
+
+    if (newQty > 0) {
+      router.post(`/cart/update/${bookId}`, { quantity: newQty })
+    } else {
+      router.post(`/cart/remove/${bookId}`)
+    }
+  } catch (err) {
+    console.error('Error in decreaseQuantity:', err)
+  }
+}
+
 </script>

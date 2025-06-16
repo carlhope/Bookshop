@@ -24,45 +24,46 @@
     <p v-else class="text-gray-500">Your cart is empty.</p>
   </div>
 </template>
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 
-<script>
-export default {
-  data() {
-    return {
-      cartBooks: []
-    };
-  },
-  computed: {
-    totalPrice() {
-      return this.cartBooks.reduce((total, book) => total + book.price * book.quantity, 0);
-    }
-  },
-  created() {
-    this.loadCart();
-  },
-  methods: {
-    loadCart() {
-      this.cartBooks = JSON.parse(localStorage.getItem('cart')) || [];
-    },
-    updateCart() {
-      localStorage.setItem('cart', JSON.stringify(this.cartBooks));
-    },
-    increaseQuantity(bookId) {
-      const book = this.cartBooks.find(b => b.id === bookId);
-      if (book) book.quantity++;
-      this.updateCart();
-    },
-    decreaseQuantity(bookId) {
-      const bookIndex = this.cartBooks.findIndex(b => b.id === bookId);
-      if (bookIndex !== -1) {
-        if (this.cartBooks[bookIndex].quantity > 1) {
-          this.cartBooks[bookIndex].quantity--;
-        } else {
-          this.cartBooks.splice(bookIndex, 1); // Remove book if quantity reaches zero
-        }
-      }
-      this.updateCart();
+defineProps({
+  book: Object
+})
+
+const cartBooks = ref([])
+
+const loadCart = () => {
+  cartBooks.value = JSON.parse(localStorage.getItem('cart')) || []
+}
+
+const updateCart = () => {
+  localStorage.setItem('cart', JSON.stringify(cartBooks.value))
+}
+
+const increaseQuantity = (bookId) => {
+  const book = cartBooks.value.find(b => b.id === bookId)
+  if (book) book.quantity++
+  updateCart()
+}
+
+const decreaseQuantity = (bookId) => {
+  const index = cartBooks.value.findIndex(b => b.id === bookId)
+  if (index !== -1) {
+    if (cartBooks.value[index].quantity > 1) {
+      cartBooks.value[index].quantity--
+    } else {
+      cartBooks.value.splice(index, 1)
     }
   }
-};
+  updateCart()
+}
+
+const totalPrice = computed(() =>
+  cartBooks.value.reduce((sum, b) => sum + b.price * b.quantity, 0)
+)
+
+onMounted(() => {
+  loadCart()
+})
 </script>
