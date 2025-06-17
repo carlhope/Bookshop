@@ -11,7 +11,6 @@ class BookController extends Controller
 {
     public function index()
 {
-     \Log::info('BooksIndex cart:', session('cart'));
 return Inertia::render('BooksIndex', [
     'books' => Book::all(),
     'cart' => session('cart', []), // Ensure cart is passed to Vue

@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Middleware;
-
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Facades\Auth;
+
 
 class HandleInertiaRequests extends Middleware
 {
@@ -35,12 +37,18 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-    public function share(Request $request): array
-    {
-        return [
-            ...parent::share($request),
-            //
-            'cart' => session('cart', []),
-        ];
-    }
+
+public function share(Request $request): array
+{
+    return [
+        ...parent::share($request),
+        'cart' => session('cart', []),
+        'errors' => Session::get('errors') ? Session::get('errors')->getBag('default')->toArray() : [],
+        'auth' => [
+            'user' => Auth::check() ? Auth::user()->only('id', 'name', 'email') : null,
+        ],
+    ];
+}
+
+
 }

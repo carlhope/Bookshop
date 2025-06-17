@@ -22,7 +22,6 @@ public function addToCart(Request $request, $id)
     $bookId = (string) $book->id;
 
     $cart = session('cart', []);
-     \Log::info('Beginning Session cart contents:', $cart);
 
     
     if (array_is_list($cart)) {
@@ -50,12 +49,6 @@ public function addToCart(Request $request, $id)
   
     session(['cart' => $cart]);
     session(['cart_count' => array_sum(array_column($cart, 'quantity'))]);
-
-    
-    Log::info('Cart updated:', $cart);
-
-  
-    \Log::info('Session cart contents:', $cart);
    return response()->json([
     'cart' => $cart,
     'cartCount' => session('cart_count', 0),
@@ -68,7 +61,6 @@ public function addToCart(Request $request, $id)
  public function viewCart()
 {
     $cart = Session::get('cart', []);
-    dd(session('cart'));
 
     $totalPrice = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
 
@@ -123,7 +115,6 @@ public function updateQuantity(Request $request, $id)
     Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
 
     $totalPrice = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
-    Log::info('Session after update:', session()->all());
     return back();
 }
 }

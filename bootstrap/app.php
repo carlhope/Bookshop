@@ -5,7 +5,6 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
 
-
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -14,15 +13,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-    $middleware->alias([
-        'inertia' => \App\Http\Middleware\HandleInertiaRequests::class,
-    ]);
+        $middleware->alias([
+            'inertia' => HandleInertiaRequests::class,
+        ]);
 
-    $middleware->group('web', [
-        'inertia',
-
-    ]);
-})
+        $middleware->group('web', [
+            'inertia',
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class, // ✅ Ensures `$errors` is available
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
