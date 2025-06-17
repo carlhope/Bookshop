@@ -24,7 +24,7 @@ public function addToCart(Request $request, $id)
     $cart = session('cart', []);
      \Log::info('Beginning Session cart contents:', $cart);
 
-    // 🛠 Re-key cart if it's a numerically indexed array (e.g. from earlier tests)
+    
     if (array_is_list($cart)) {
         $converted = [];
         foreach ($cart as $item) {
@@ -35,7 +35,7 @@ public function addToCart(Request $request, $id)
         $cart = $converted;
     }
 
-    // 🧠 Add or increment the book
+   
     if (isset($cart[$bookId])) {
         $cart[$bookId]['quantity']++;
     } else {
@@ -47,14 +47,14 @@ public function addToCart(Request $request, $id)
         ];
     }
 
-    // 💾 Store back into session
+  
     session(['cart' => $cart]);
     session(['cart_count' => array_sum(array_column($cart, 'quantity'))]);
 
-    // 📋 Log for debugging
+    
     Log::info('Cart updated:', $cart);
 
-    // 🧪 Response for Vue to inspect cart data while building
+  
     \Log::info('Session cart contents:', $cart);
    return response()->json([
     'cart' => $cart,
@@ -68,10 +68,11 @@ public function addToCart(Request $request, $id)
  public function viewCart()
 {
     $cart = Session::get('cart', []);
+    dd(session('cart'));
 
     $totalPrice = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
 
-    return \Inertia\Inertia::render('Cart', [
+    return Inertia::render('Cart', [
         'cart' => array_values($cart),
         'cartCount' => Session::get('cart_count', 0),
         'totalPrice' => $totalPrice,
@@ -102,7 +103,7 @@ public function updateQuantity(Request $request, $id)
     $cart = Session::get('cart', []);
     $newQuantity = max(0, (int) $request->quantity);
 
-    // 🔍 This is where it’s failing: item isn't in cart
+   
    if (!array_key_exists($id, $cart)) {
     return response()->json([
         'message' => 'Item not found.',
@@ -122,7 +123,7 @@ public function updateQuantity(Request $request, $id)
     Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
 
     $totalPrice = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
-
+    Log::info('Session after update:', session()->all());
     return back();
 }
 }

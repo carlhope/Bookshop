@@ -40,6 +40,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             //
+            'cart' => session('cart', []),
         ];
     }
 }

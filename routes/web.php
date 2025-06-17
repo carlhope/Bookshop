@@ -28,6 +28,13 @@ Route::middleware([
         'cartCount' => $cartCount,
     ]);
 });
+Route::get('/books', function () {
+    $cart = session('cart', []);
+    return Inertia::render('BooksIndex', [
+        'books' => \App\Models\Book::all(),
+        'cart' => $cart
+    ]);
+});
 Route::get('/cart', function () {
     $cart = session('cart', []);
     return Inertia::render('Cart', [
@@ -43,15 +50,13 @@ Route::post('/cart/remove/{id}', [CartController::class, 'removeFromCart'])->nam
 
 Route::get('/', fn () => Inertia::render('Home'));
 
-Route::get('/about', fn () => Inertia::render('About'));
-
-
-
-Route::get('/books', function () {
-    return Inertia::render('BooksIndex', [
-        'books' => \App\Models\Book::all(),
-    ]);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/about', fn () => Inertia::render('About'));
 });
+
+
+
+
 
 
 
@@ -62,3 +67,11 @@ Route::get('/clear-cart', function () {
     session()->forget('cart_count');
     return 'Cart cleared!';
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
