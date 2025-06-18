@@ -49,10 +49,10 @@ public function addToCart(Request $request, $id)
   
     session(['cart' => $cart]);
     session(['cart_count' => array_sum(array_column($cart, 'quantity'))]);
-   return response()->json([
-    'cart' => $cart,
-    'cartCount' => session('cart_count', 0),
-]);
+   return back()->with([
+        'cart_count' => session('cart_count', 0)
+    ]);
+
 
 
 }
@@ -77,33 +77,30 @@ public function addToCart(Request $request, $id)
     
     unset($cart[$id]);
     Session::put('cart', $cart);
-    Session::put('cart_count', array_sum(array_column($cart, 'quantity'))); // Update count
+    Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
      $totalPrice = collect($cart)->sum(function ($item) {
         return $item['price'] * $item['quantity'];
     });
 
-    return response()->json([
+ return back()->with([
         'message' => 'Book removed from cart.',
         'cart_count' => Session::get('cart_count', 0),
         'total_price' => $totalPrice
     ]);
+
+
 } 
 public function updateQuantity(Request $request, $id)
 {
     $id = (string) $id;
-
     $cart = Session::get('cart', []);
     $newQuantity = max(0, (int) $request->quantity);
 
-   
-   if (!array_key_exists($id, $cart)) {
-    return response()->json([
-        'message' => 'Item not found.',
-        'cart_count' => session('cart_count', 0),
-        'total_price' => 0
-    ], 400);
-}
-
+    if (!array_key_exists($id, $cart)) {
+        return redirect()->route('cart.view')->withErrors([
+            'message' => 'Item not found.'
+        ]);
+    }
 
     if ($newQuantity < 1) {
         unset($cart[$id]);
@@ -114,7 +111,9 @@ public function updateQuantity(Request $request, $id)
     Session::put('cart', $cart);
     Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
 
-    $totalPrice = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
-    return back();
+  return back()->with([
+    'cart_count' => session('cart_count', 0),
+    'total_price' => collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity'])
+]);
 }
 }

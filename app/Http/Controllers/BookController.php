@@ -13,7 +13,7 @@ class BookController extends Controller
 {
 return Inertia::render('BooksIndex', [
     'books' => Book::all(),
-    'cart' => session('cart', []), // Ensure cart is passed to Vue
+    'cart' => session('cart', []),
 ]);
 }
 
