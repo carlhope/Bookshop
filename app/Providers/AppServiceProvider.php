@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 
@@ -23,7 +24,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Inertia::share([
                 'cart' => fn () => session('cart', []),
-                'cartCount' => fn () => session('cart_count', 0),
+                'cartCount' => fn () => Session::get('cart_count', 0),
+
             ]);
 
 

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BookController;
 use Inertia\Inertia;
 
 // 🔹 Authentication Routes (Move this outside session middleware)
@@ -60,6 +61,12 @@ Route::get('/', fn () => Inertia::render('Home'));
 Route::middleware(['auth'])->group(function () {
     Route::get('/about', fn () => Inertia::render('About'));
     Route::get('/home', fn () => Inertia::render('Home'));
+     Route::get('/books/create', function () {
+        return Inertia::render('BookCreate');
+    });
+
+    Route::post('/books', [BookController::class, 'create']);
+    Route::put('/books/{book}', [BookController::class, 'update']);
 });
 Route::post('/logout', function () {
     Auth::logout();
