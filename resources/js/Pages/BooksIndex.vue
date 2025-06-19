@@ -24,7 +24,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { router } from '@inertiajs/vue3'
-import BookCard from '../components/BookCard.vue' // Ensure this import is correct
+import BookCard from '../components/BookCard.vue'
 
 // Fetch data from Laravel session via Inertia
 const page = usePage()
@@ -37,19 +37,17 @@ const getCartItem = (bookId) => computed(() => {
   return cart.value[bookId] ? { ...cart.value[bookId] } : null;
 });
 
-// Convert Vue Proxy Object into a plain object for reactivity
 const updateCart = () => {
   const cartData = JSON.parse(JSON.stringify(page.props.cart)) || {}
-  cart.value = {} // Reset the object first
+  cart.value = {} 
 
   nextTick(() => {
-    cart.value = { ...cartData } // Assign new data after Vue processes
-    cartVersion.value += 1 // Force Vue to recognize updates
-    console.log("Updated cart state:", cart.value) // Debugging check
+    cart.value = { ...cartData } 
+    cartVersion.value += 1 
+    console.log("Updated cart state:", cart.value) 
   })
 }
 
-// Watch for cart updates from Laravel
 watch(() => page.props.cart, (newCart) => {
   console.log("Cart updated from Laravel:", newCart)
   updateCart()
@@ -61,16 +59,16 @@ const addToCart = (bookId) => {
     onSuccess: ({ props }) => {
       console.log("Cart response from Laravel:", props.cart);
 
-      // ✅ Force Vue reactivity by replacing the entire cart object
+     
       cart.value = JSON.parse(JSON.stringify(props.cart)); 
-      cartVersion.value += 1; // Trigger component refresh
+      cartVersion.value += 1; 
     }
   });
 };
 
 const increaseQuantity = (bookId) => {
   if (cart.value[bookId]) {
-    cart.value[bookId].quantity++; // Update UI before waiting on server response
+    cart.value[bookId].quantity++;
     router.post(`/cart/update/${bookId}`, { quantity: cart.value[bookId].quantity }, {
       preserveScroll: true,
       onSuccess: updateCart
@@ -80,20 +78,18 @@ const increaseQuantity = (bookId) => {
 
 const decreaseQuantity = (bookId) => {
   if (cart.value[bookId]?.quantity > 1) {
-    cart.value[bookId].quantity--; // Update UI immediately
+    cart.value[bookId].quantity--; 
     router.post(`/cart/update/${bookId}`, { quantity: cart.value[bookId].quantity }, {
       preserveScroll: true,
       onSuccess: updateCart
     })
   } else {
-    delete cart.value[bookId] // Remove item locally for immediate UI change
+    delete cart.value[bookId]
     router.post(`/cart/remove/${bookId}`, {}, {
       preserveScroll: true,
       onSuccess: updateCart
     })
   }
 }
-
-// Initialize cart state on mount
 updateCart()
 </script>

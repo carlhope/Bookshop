@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 
 class HandleInertiaRequests extends Middleware
@@ -45,7 +46,7 @@ public function share(Request $request): array
         'cart' => session('cart', []),
         'errors' => Session::get('errors') ? Session::get('errors')->getBag('default')->toArray() : [],
         'auth' => [
-            'user' => Auth::check() ? Auth::user()->only('id', 'name', 'email') : null,
+            'user' => fn () => Auth::check() ? Auth::user()->only('id', 'name', 'email') : null,
         ],
     ];
 }

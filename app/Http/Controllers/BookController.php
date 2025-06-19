@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -22,35 +23,42 @@ return Inertia::render('BooksIndex', [
     $book = Book::findOrFail($id);
     return view('books.show', compact('book'));
 }
-public function apiIndex()
-{
-    return response()->json(Book::all());
-}
 
-public function apiShow($id)
+public function showCreateForm() 
 {
-    return response()->json(Book::findOrFail($id));
+    $categories = Category::all(['id', 'name']);
+    return Inertia::render('BookCreate', ['categories' => $categories]);
 }
 public function create(Request $request)
 {
     $validated = $request->validate([
         'title' => 'required|string|max:255',
         'author' => 'required|string|max:255',
-        'price' => 'required|numeric|min:0',
+        'published_year' => 'required|integer|min:1000|max:' . date('Y'),
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'nullable|string',
+        'price' => 'nullable|numeric|min:0',
+        'cover_image' => 'nullable|url', 
     ]);
 
     Book::create($validated);
-    return redirect()->back()->with('success', 'Book saved successfully!');
+    return redirect()->route('books.index')->with('success', 'Book created!');
 }
 
-public function update(Request $request, Book $book)
+public function update(Request $request, $id)
 {
+    $book = Book::findOrFail($id);
+    \Log::info('Book before update:', ['book' => $book]);
     $validated = $request->validate([
         'title' => 'required|string|max:255',
         'author' => 'required|string|max:255',
-        'price' => 'required|numeric|min:0',
+        'published_year' => 'required|integer|min:1000|max:' . date('Y'),
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'nullable|string',
+        'price' => 'nullable|numeric|min:0',
+        'cover_image' => 'nullable|url', 
     ]);
-
+    $updated = $book->update($validated);
     $book->update($validated);
     return redirect()->back()->with('success', 'Book updated successfully!');
 }

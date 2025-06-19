@@ -29,34 +29,34 @@ import { ref, computed, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { router } from '@inertiajs/vue3'
 
-// Retrieve session cart via Inertia
+
 const page = usePage()
 const cartBooks = ref([])
 
-// Convert Vue Proxy Object into a plain object for reactivity
+
 const updateCart = () => {
   const cartData = JSON.parse(JSON.stringify(page.props.cart)) || {}
-  cartBooks.value = Object.values(cartData) // Convert object to array
+  cartBooks.value = Object.values(cartData)
   console.log("Cart received from Inertia:", page.props.cart);
 }
 
-// Watch for cart changes in Laravel session
+
 watch(() => page.props.cart, (newCart) => {
   const cartData = JSON.parse(JSON.stringify(newCart)) || {}
-  cartBooks.value = Object.values(cartData) // Ensure Vue sees an array
+  cartBooks.value = Object.values(cartData) 
 }, { deep: true })
 
 
 const updateQuantity = (bookId, newQty) => {
   const bookIndex = cartBooks.value.findIndex(b => b.book_id === bookId);
   if (bookIndex !== -1) {
-    cartBooks.value[bookIndex].quantity = newQty; // ✅ Immediately update UI
+    cartBooks.value[bookIndex].quantity = newQty;
   }
 
   router.post(`/cart/update/${bookId}`, { quantity: newQty }, {
     preserveScroll: true,
     onSuccess: () => {
-      updateCart(); // ✅ Sync with Laravel after backend update
+      updateCart(); 
     }
   });
 };
@@ -77,18 +77,16 @@ const decreaseQuantity = (bookId) => {
       router.post(`/cart/remove/${bookId}`, {}, {
         preserveScroll: true,
         onSuccess: () => {
-          updateCart() // Ensure UI updates after removal
+          updateCart() 
         }
       })
     }
   }
 }
 
-// Compute total price
 const totalPrice = computed(() =>
   cartBooks.value.reduce((sum, b) => sum + b.price * b.quantity, 0)
 )
 
-// Initialize cart on mount
 updateCart()
 </script>

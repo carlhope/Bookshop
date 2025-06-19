@@ -36,7 +36,7 @@
 <script setup>
 defineProps({
   book: Object,
-  cartItem: Object // Receives cart data directly
+  cartItem: Object
 });
 </script>
 

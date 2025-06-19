@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\BookController;
+use App\Http\Controllers\ApiController;
 
-Route::get('/books', [BookController::class, 'apiIndex']);
-Route::get('/books/{id}', [BookController::class, 'apiShow']);
+Route::get('/books', [ApiController::class, 'index']);
+Route::get('/books/{id}', [ApiController::class, 'show']);

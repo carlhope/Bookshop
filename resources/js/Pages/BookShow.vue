@@ -33,6 +33,13 @@
       </div>
     </div>
   </div>
+<div class="mt-10 border-t pt-6" v-if="user">
+  <h3 class="text-xl font-semibold mb-4">Edit This Book</h3>
+  <BookForm :book="book" :categories="page.props.categories" />
+</div>
+<div class="mt-10 border-t pt-6 text-center text-gray-600" v-else>
+  <p class="text-lg"><a href=/login class="text-blue-600 hover:underline font-medium">Login to edit this book.</a></p>
+</div>
 </template>
 
 <script setup>
@@ -40,9 +47,13 @@ import { computed, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 
+
+import BookForm from '@/Components/BookForm.vue'
+
 const page = usePage()
 const cart = computed(() => page.props.cart)
 const cartCount = computed(() => page.props.cartCount)
+const user = computed(() => page.props.auth?.user)
 
 
 const props = defineProps({
@@ -60,7 +71,7 @@ const addToCart = () => {
 
   router.post(`/cart/add/${props.book.id}`, {}, {
     preserveScroll: true,
-    // ↓ Allow Inertia to refresh props so cartQuantity updates
+
     onFinish: () => {
       processing.value = false
     }
@@ -95,5 +106,5 @@ const decreaseQuantity = () => {
     console.error('Error in decreaseQuantity:', err)
   }
 }
-
+console.log('User:', user.value)
 </script>

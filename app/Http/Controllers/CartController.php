@@ -15,7 +15,6 @@ class CartController extends Controller
 
 public function addToCart(Request $request, $id)
 {
-    //$request->session()->start();
 
     session()->put('ping', now());
     $book = Book::findOrFail($id);
@@ -46,19 +45,12 @@ public function addToCart(Request $request, $id)
         ];
     }
 
-  
-    //session(['cart' => $cart]);
-    //session(['cart_count' => array_sum(array_column($cart, 'quantity'))]);
     $this->updateCartSession($cart);
 
    return back()->with([
         'cart_count' => session('cart_count', 0)
     ]);
-
-
-
 }
-
 
  public function viewCart()
 {
@@ -78,8 +70,6 @@ public function addToCart(Request $request, $id)
     $cart = Session::get('cart', []);
     
     unset($cart[$id]);
-    //Session::put('cart', $cart);
-    //Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
      $totalPrice = collect($cart)->sum(function ($item) {
         return $item['price'] * $item['quantity'];
     });
@@ -110,9 +100,6 @@ public function updateQuantity(Request $request, $id)
     } else {
         $cart[$id]['quantity'] = $newQuantity;
     }
-
-    //Session::put('cart', $cart);
-    //Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
 
     $this->updateCartSession($cart);
 
