@@ -6,6 +6,9 @@ use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
+
 
 
 class BookController extends Controller
@@ -24,42 +27,26 @@ return Inertia::render('BooksIndex', [
     return view('books.show', compact('book'));
 }
 
-public function showCreateForm() 
+public function showCreateForm()
 {
     $categories = Category::all(['id', 'name']);
     return Inertia::render('BookCreate', ['categories' => $categories]);
 }
-public function create(Request $request)
-{
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'author' => 'required|string|max:255',
-        'published_year' => 'required|integer|min:1000|max:' . date('Y'),
-        'category_id' => 'required|exists:categories,id',
-        'description' => 'nullable|string',
-        'price' => 'nullable|numeric|min:0',
-        'cover_image' => 'nullable|url', 
-    ]);
+    public function create(StoreBookRequest $request)
+    {
+        Book::create($request->validated());
+        return redirect()->route('books.index')->with('success', 'Book created!');
+    }
 
-    Book::create($validated);
-    return redirect()->route('books.index')->with('success', 'Book created!');
-}
+    public function update(UpdateBookRequest $request, $id)
+    {
+        $book = Book::findOrFail($id);
 
-public function update(Request $request, $id)
-{
-    $book = Book::findOrFail($id);
-    \Log::info('Book before update:', ['book' => $book]);
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'author' => 'required|string|max:255',
-        'published_year' => 'required|integer|min:1000|max:' . date('Y'),
-        'category_id' => 'required|exists:categories,id',
-        'description' => 'nullable|string',
-        'price' => 'nullable|numeric|min:0',
-        'cover_image' => 'nullable|url', 
-    ]);
-    $updated = $book->update($validated);
-    $book->update($validated);
-    return redirect()->back()->with('success', 'Book updated successfully!');
-}
+        \Log::info('Book before update:', ['book' => $book]);
+
+        $book->update($request->validated());
+
+        return redirect()->back()->with('success', 'Book updated successfully!');
+    }
+
 }

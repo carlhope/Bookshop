@@ -11,6 +11,10 @@ class Book extends Model
 
     protected $fillable = ['title', 'author', 'published_year', 'category_id', 'description', 'price', 'cover_image'];
 
+    protected $casts = [
+        'published_year' => 'integer',
+        'price' => 'decimal:2'
+    ];
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -20,4 +24,6 @@ class Book extends Model
     {
         return $this->belongsToMany(Order::class)->withPivot('quantity');
     }
+
+
 }
