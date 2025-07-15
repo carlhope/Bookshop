@@ -33,7 +33,7 @@ Route::middleware([
   Route::get('/books', function () {
     $cart = session('cart', []);
     return Inertia::render('BooksIndex', [
-        'books' => \App\Models\Book::all(),
+        'books' => Book::all(),
         'cart' => $cart,
     ]);
 })->name('books.index');

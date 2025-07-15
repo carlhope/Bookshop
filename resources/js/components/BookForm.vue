@@ -108,16 +108,15 @@
   </form>
 </template>
 
-<script>
+<script setup>
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-export default {
-  props: {
-    book: Object,
-    categories: Array,
-  },
-  setup(props) {
+const props = defineProps({
+  book: Object,
+  categories: Array,
+})
+
     const form = useForm({
       title: props.book?.title || '',
       author: props.book?.author || '',
@@ -140,8 +139,4 @@ export default {
          preserveScroll: true
         });
     };
-
-    return { form, submitForm, isEditing };
-  },
-};
 </script>
