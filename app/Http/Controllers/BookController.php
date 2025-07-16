@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -15,10 +16,12 @@ class BookController extends Controller
 {
     public function index()
 {
-return Inertia::render('BooksIndex', [
-    'books' => Book::all(),
-    'cart' => session('cart', []),
-]);
+    $books = Book::with('category')->paginate(120);
+    \Log::info($books);
+        return Inertia::render('BooksIndex', [
+            'books' => $books,
+            'cart' => session('cart', []),
+        ]);
 }
 
     public function show($id)

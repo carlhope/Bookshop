@@ -1,6 +1,8 @@
 <template>
   <div v-if="book" class="book-card bg-white shadow-md p-4 rounded-lg flex flex-col items-center w-full max-w-sm">
-    <img :src="book.cover_image || '/default-cover.jpg'" :alt="book.title" class="w-40 h-56 object-contain rounded">
+    <img :src="book.cover_image || defaultCover"
+         @error="handleImageError"
+         :alt="book.title" class="w-40 h-56 object-contain rounded">
 
     <div class="flex-1">
       <h3 class="text-lg font-bold">{{ book.title }}</h3>
@@ -38,5 +40,10 @@ defineProps({
   book: Object,
   cartItem: Object
 });
+const defaultCover = './4735.jpg'
+
+const handleImageError = (event) => {
+    event.target.src = defaultCover
+}
 </script>
 

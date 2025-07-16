@@ -30,13 +30,7 @@ Route::middleware([
         ]);
     })->name('cart.view');
 
-  Route::get('/books', function () {
-    $cart = session('cart', []);
-    return Inertia::render('BooksIndex', [
-        'books' => Book::all(),
-        'cart' => $cart,
-    ]);
-})->name('books.index');
+    Route::get('/books', [BookController::class, 'index'])->name('books.index');
 
     Route::get('/books/{id}', function ($id) {
         $book = Book::findOrFail($id);
@@ -49,7 +43,7 @@ Route::middleware([
 
         ]);
     });
-    
+
 
     //  Clear Cart Route for testing purposes
     Route::get('/clear-cart', function () {
@@ -63,7 +57,7 @@ Route::middleware([
 Route::get('/', fn () => Inertia::render('Home'));
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['custom-auth'])->group(function () {
     Route::get('/about', fn () => Inertia::render('About'));
     Route::get('/home', fn () => Inertia::render('Home'));
     Route::get('/createbook', [BookController::class, 'showCreateForm']);
@@ -73,9 +67,9 @@ Route::middleware(['auth'])->group(function () {
     Auth::logout();
     return redirect('/');
         })->name('logout')->middleware('web');
-    
+
     });
 
-   
+
 
 
