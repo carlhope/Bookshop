@@ -23,7 +23,7 @@
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-gold-500 text-gray-900 p-3">
+    <nav class="bg-yellow-500 text-gray-900 p-3">
         <div class="flex justify-between items-center">
             <div class="hidden md:flex space-x-3">
                 <a href="/" class="px-3 font-semibold hover:text-purple-200">Home</a>

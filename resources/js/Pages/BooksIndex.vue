@@ -6,7 +6,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <BookCard
           v-for="book in books.data"
-          :key="book.id + cartVersion"
+          :key="book.id"
           :book="book"
           :cartItem="getCartItem(book.id).value"
           @add-to-cart="addToCart"

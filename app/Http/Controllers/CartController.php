@@ -16,13 +16,12 @@ class CartController extends Controller
 public function addToCart(Request $request, $id)
 {
 
-    session()->put('ping', now());
     $book = Book::findOrFail($id);
     $bookId = (string) $book->id;
 
     $cart = session('cart', []);
 
-    
+
     if (array_is_list($cart)) {
         $converted = [];
         foreach ($cart as $item) {
@@ -33,7 +32,7 @@ public function addToCart(Request $request, $id)
         $cart = $converted;
     }
 
-   
+
     if (isset($cart[$bookId])) {
         $cart[$bookId]['quantity']++;
     } else {
@@ -54,6 +53,7 @@ public function addToCart(Request $request, $id)
 
  public function viewCart()
 {
+    session()->put('cart_last_interaction', now());
     $cart = Session::get('cart', []);
 
     $totalPrice = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
@@ -68,7 +68,7 @@ public function addToCart(Request $request, $id)
    public function removeFromCart($id)
 {
     $cart = Session::get('cart', []);
-    
+
     unset($cart[$id]);
      $totalPrice = collect($cart)->sum(function ($item) {
         return $item['price'] * $item['quantity'];
@@ -83,7 +83,7 @@ public function addToCart(Request $request, $id)
     ]);
 
 
-} 
+}
 public function updateQuantity(Request $request, $id)
 {
     $id = (string) $id;
@@ -111,6 +111,7 @@ public function updateQuantity(Request $request, $id)
 }
 private function updateCartSession($cart)
 {
+    session()->put('cart_last_interaction', now());
     Session::put('cart', $cart);
     Session::put('cart_count', array_sum(array_column($cart, 'quantity')));
 }
